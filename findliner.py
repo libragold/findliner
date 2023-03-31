@@ -29,8 +29,7 @@ def generate_png(pdf_fn, png_fn):
     # When pdf consists of a single page, imagemagick does not append a counter to the png file
     png_fn_alt = png_fn + '-0' if number_of_pages == 1 else png_fn
     cmd = ['convert', pdf_fn, '-strip', 'png:{}'.format(png_fn_alt)]
-    # cmd = ['convert', pdf_fn, '-strip', 'png:{}'.format(png_fn_alt)]
-    print(' '.join(cmd))
+    # print(' '.join(cmd))
     subprocess.run(cmd)
 
 
@@ -43,7 +42,7 @@ def repair_pdf(old, new):
 def get_height(png_fn, idx, number_of_pages):
     print('Processing {}/{}...'.format(idx + 1, number_of_pages))
     cmd = ['identify', '-ping', '-format', "'%w %h'", '{}-{}'.format(png_fn, idx)]
-    print(' '.join(cmd))
+    # print(' '.join(cmd))
     dimension = subprocess.run(cmd, capture_output=True, encoding='utf8').stdout[1:-1]
     return int(dimension.split()[1])
 
