@@ -1,1 +1,3 @@
 *.pdf
+findliner.egg-info/*
+__pycache__/*.pyc
