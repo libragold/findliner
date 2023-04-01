@@ -80,7 +80,7 @@ def work(path_to_file, work_dir, verbose):
     return existing_pdf, png_heights, lines_per_page, number_of_pages
 
 
-def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, font_size, baseline_shift):
+def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift):
     ## Add text to existing PDF using Python
     # https://stackoverflow.com/questions/1180115/add-text-to-existing-pdf-using-python
 
@@ -93,7 +93,7 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
         width = page.mediabox[2]
         height = page.mediabox[3]
         can.setPageSize((width, height))
-        can.setFillColor(colors.red)
+        can.setFillColor(colors.HexColor(hex_color))
         can.setFont('Courier', font_size)
         
         reduced_lines = lines[offset_top:len(lines)-offset_bottom]
@@ -128,10 +128,11 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
 @click.option('--offset_top', default=0, help='Ignore the first few lines of text on each page.')
 @click.option('--offset_bottom', default=0, help='Ignore the last few lines of text on each page.')
 @click.option('--margin_left', default=35, show_default=True, help='Specify the margin on the left of the line numbers')
-@click.option('--font_size', default=6, show_default=True, help='Specify font size of the line numbers')
-@click.option('--baseline_shift', default=-2, show_default=True, help='Reposition baseline of the line numbers')
+@click.option('--hex_color', default='#000000', show_default=True, help='Specify the hex color code of the line numbers')
+@click.option('--font_size', default=6, show_default=True, help='Specify the font size of the line numbers')
+@click.option('--baseline_shift', default=-2, show_default=True, help='Reposition the baseline of the line numbers')
 @click.option('--verbose', is_flag=True, help='Enables verbose mode')
-def cli(filename, offset_top, offset_bottom, margin_left, font_size, baseline_shift, verbose):
+def cli(filename, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift, verbose):
     path_to_file = click.format_filename(filename)
 
     # Check if the filetype is .pdf
@@ -141,4 +142,4 @@ def cli(filename, offset_top, offset_bottom, margin_left, font_size, baseline_sh
     with tempfile.TemporaryDirectory() as work_dir:
         existing_pdf, png_heights, lines_per_page, number_of_pages = work(path_to_file, work_dir, verbose)
 
-    create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, font_size, baseline_shift)
+    create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift)

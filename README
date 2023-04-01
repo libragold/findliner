@@ -1,0 +1,8 @@
+$ findliner
+
+  findliner adds line numbers to a pdf file.
+
+Usage:
+
+  $ pip install --editable .
+  $ findliner --help
