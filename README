@@ -2,6 +2,10 @@ $ findliner
 
   findliner adds line numbers to a pdf file.
 
+Prerequisite:
+  Ghostscript https://www.ghostscript.com
+  ImageMagick https://imagemagick.org
+
 Usage:
 
   $ pip install --editable .
