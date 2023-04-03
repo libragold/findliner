@@ -71,12 +71,12 @@ def work(path_to_file, work_dir, verbose):
 
     png_heights = []
     lines_per_page = []
-    for i in range(number_of_pages):
-        click.echo(f'Processing {i+1}/{number_of_pages}...')
-        png_fn = f'{png_fn_base}-{i}'
-        height = get_height(png_fn, verbose)
-        png_heights.append(height)
-        lines_per_page.append(get_lines(png_fn, height, verbose))
+    with click.progressbar(range(number_of_pages), label='Finding lines of content') as bar:
+        for i in bar:
+            png_fn = f'{png_fn_base}-{i}'
+            height = get_height(png_fn, verbose)
+            png_heights.append(height)
+            lines_per_page.append(get_lines(png_fn, height, verbose))
     return existing_pdf, png_heights, lines_per_page, number_of_pages
 
 
@@ -88,18 +88,19 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
     packet = io.BytesIO()
     can = canvas.Canvas(packet)
 
-    for idx, lines in enumerate(lines_per_page):
-        page = existing_pdf.pages[idx]
-        width = page.mediabox[2]
-        height = page.mediabox[3]
-        can.setPageSize((width, height))
-        can.setFillColor(colors.HexColor(hex_color))
-        can.setFont('Courier', font_size)
-        
-        reduced_lines = lines[offset_top:len(lines)-offset_bottom]
-        for j, y in enumerate(reduced_lines):
-            can.drawString(margin_left, int(height - y * height / png_heights[idx]) + baseline_shift, f'{idx + 1}.{j + 1}')
-        can.showPage()
+    with click.progressbar((lines_per_page), label='Writing line numbers') as bar:
+        for idx, lines in enumerate(bar):
+            page = existing_pdf.pages[idx]
+            width = page.mediabox[2]
+            height = page.mediabox[3]
+            can.setPageSize((width, height))
+            can.setFillColor(colors.HexColor(hex_color))
+            can.setFont('Courier', font_size)
+            
+            reduced_lines = lines[offset_top:len(lines)-offset_bottom]
+            for j, y in enumerate(reduced_lines):
+                can.drawString(margin_left, int(height - y * height / png_heights[idx]) + baseline_shift, f'{idx + 1}.{j + 1}')
+            can.showPage()
 
     can.save()
 
@@ -125,8 +126,8 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
 
 @click.command()
 @click.argument('filename', type=click.Path(exists=True))
-@click.option('--offset_top', default=0, help='Ignore the first few lines of text on each page.')
-@click.option('--offset_bottom', default=0, help='Ignore the last few lines of text on each page.')
+@click.option('--offset_top', default=0, help='Ignore the first few lines of content on each page.')
+@click.option('--offset_bottom', default=0, help='Ignore the last few lines of content on each page.')
 @click.option('--margin_left', default=35, show_default=True, help='Specify the margin on the left of the line numbers')
 @click.option('--hex_color', default='#000000', show_default=True, help='Specify the hex color code of the line numbers')
 @click.option('--font_size', default=6, show_default=True, help='Specify the font size of the line numbers')
