@@ -124,6 +124,7 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
     output.write(outputStream)
     outputStream.close()
 
+
 @click.command()
 @click.argument('filename', type=click.Path(exists=True))
 @click.option('--offset_top', default=0, help='Ignore the first few lines of content on each page.')
@@ -144,3 +145,7 @@ def cli(filename, offset_top, offset_bottom, margin_left, hex_color, font_size, 
         existing_pdf, png_heights, lines_per_page, number_of_pages = work(path_to_file, work_dir, verbose)
 
     create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift)
+
+
+if __name__ == '__main__':
+    cli()
