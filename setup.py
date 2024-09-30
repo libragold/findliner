@@ -3,7 +3,7 @@ from setuptools import setup
 
 setup(
     name='findliner',
-    version='1.0.1',
+    version='1.1.0',
     py_modules=['findliner'],
     install_requires=[
         'click==8.1.7',

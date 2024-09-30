@@ -80,7 +80,7 @@ def work(path_to_file, work_dir, verbose):
     return existing_pdf, png_heights, lines_per_page, number_of_pages
 
 
-def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift):
+def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, margin_right, hex_color, font_size, baseline_shift):
     ## Add text to existing PDF using Python
     # https://stackoverflow.com/questions/1180115/add-text-to-existing-pdf-using-python
 
@@ -96,10 +96,13 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
             can.setPageSize((width, height))
             can.setFillColor(colors.HexColor(hex_color))
             can.setFont('Courier', font_size)
-            
+
             reduced_lines = lines[offset_top:len(lines)-offset_bottom]
+            # Use margin_right if provided, otherwise use margin_left
+            x_position = width - margin_right if margin_right is not None else margin_left
+            
             for j, y in enumerate(reduced_lines):
-                can.drawString(margin_left, int(height - y * height / png_heights[idx]) + baseline_shift, f'{idx + 1}.{j + 1}')
+                can.drawString(x_position, int(height - y * height / png_heights[idx]) + baseline_shift, f'{idx + 1}.{j + 1}')
             can.showPage()
 
     can.save()
@@ -130,11 +133,12 @@ def create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_f
 @click.option('--offset_top', default=0, help='Ignore the first few lines of content on each page.')
 @click.option('--offset_bottom', default=0, help='Ignore the last few lines of content on each page.')
 @click.option('--margin_left', default=35, show_default=True, help='Specify the margin on the left of the line numbers')
+@click.option('--margin_right', type=int, help='Specify the margin on the right of the line numbers (overrides margin_left)')
 @click.option('--hex_color', default='#000000', show_default=True, help='Specify the hex color code of the line numbers')
 @click.option('--font_size', default=6, show_default=True, help='Specify the font size of the line numbers')
 @click.option('--baseline_shift', default=-2, show_default=True, help='Reposition the baseline of the line numbers')
 @click.option('--verbose', is_flag=True, help='Enables verbose mode')
-def cli(filename, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift, verbose):
+def cli(filename, offset_top, offset_bottom, margin_left, margin_right, hex_color, font_size, baseline_shift, verbose):
     path_to_file = click.format_filename(filename)
 
     # Check if the filetype is .pdf
@@ -144,7 +148,7 @@ def cli(filename, offset_top, offset_bottom, margin_left, hex_color, font_size, 
     with tempfile.TemporaryDirectory() as work_dir:
         existing_pdf, png_heights, lines_per_page, number_of_pages = work(path_to_file, work_dir, verbose)
 
-    create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, hex_color, font_size, baseline_shift)
+    create(existing_pdf, png_heights, lines_per_page, number_of_pages, path_to_file, offset_top, offset_bottom, margin_left, margin_right, hex_color, font_size, baseline_shift)
 
 
 if __name__ == '__main__':

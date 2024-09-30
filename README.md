@@ -60,6 +60,15 @@ cd findliner
 pip install --editable .
 ```
 
+## Updating Findliner
+To update Findliner to the latest version, navigate to the Findliner directory, pull the latest changes, and reinstall in editable mode:
+```bash
+cd findliner
+git pull
+pip install --editable .
+```
+This will ensure you have the latest code and the updated package.
+
 # Usage
 To add line numbers to a PDF file:
 ```bash
